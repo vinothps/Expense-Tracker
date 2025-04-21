@@ -1,6 +1,5 @@
 body{
 
-  border: solid red;
   margin: 0;
   font-family: sans-serif;
   background-color: #f4f6f9;
@@ -85,12 +84,18 @@ text-align: center;
   box-shadow: 0 2px 4px rgba(0, 0,0,0.1);
 }
 
-@media (max-width: 600px) {
-  .add-expense-form {
-    flex-direction: column;
-    align-items: center;
-  }
-  
+.budget-item h3 {
+  margin-bottom : 05.rem;
+  font-size: 1rem;
+  color : #333;
+
+}
+
+.budget-item p {
+  font-size:1.1rem;
+  color:#4caf50;
+
+
 }
 
 /* Reset Budget Button css here */
@@ -113,4 +118,71 @@ text-align: center;
 .reset-btn:hover {
 background-color: #c21e2b;
 }
+
+/* income inputs */
+
+.income-inputs {
+  display : flex;
+  justify-content : space-between;
+  gap: 1rem;
+  margin-bottom : 1.5rem;
+  flex-wrap:wrap;
+  align-items: center;
+}
+
+.income-inputs h3 {
+
+  text-align : center;
+ 
+}
+
+.income-inputs label {
+  flex : 1;
+  display: flex;
+  flex-direction : column;
+  font-weight : 500;
+  color:#444;
+}
+
+.income-inputs input {
+  padding: 0.5rem;
+  margin-top: 0.25rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+/* Export excel */
+
+.export-btn-container{
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.export-btn {
+  background-color: #4caf50;
+  color: white;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6PX;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.export-btn:hover {
+  background-color: #45a049;
+}
+
+@media (max-width: 600px) {
+
+  .income-inputs {
+    flex-direction : column;
+  }
+  .add-expense-form {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+}
+
+
 

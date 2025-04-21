@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { CATEGORIES } from '../data/categories';
+import * as XLSX from 'xlsx';
 
 const initialBudgetItems = CATEGORIES.map(item => ({
     name: item.value,
@@ -8,8 +9,14 @@ const initialBudgetItems = CATEGORIES.map(item => ({
 
 const BudgetList = () => {
 
-    const [salary, setSalary] = useState(95400);
-    const [otherIncome, setOtherIncome] = useState(6000);
+    const [salary, setSalary] = useState(() => {
+        const saved = localStorage.getItem('salary');
+        return saved ? Number(saved) : 95400;
+    });
+    const [otherIncome, setOtherIncome] = useState(() => {
+        const saved = localStorage.getItem('otherIncome');
+        return saved ? Number(saved) : 6000;
+    });
     const [budgetItems, setBudgetItems] = useState(() => {
         const saved = localStorage.getItem('budgetItems');
         if (saved) {
@@ -29,9 +36,18 @@ const BudgetList = () => {
 
 
     // Save to local storage whenever budgetItems changes
+
     React.useEffect(() => {
         localStorage.setItem('budgetItems', JSON.stringify(budgetItems));
     }, [budgetItems]);
+
+    React.useEffect(() => {
+        localStorage.setItem('salary', salary);
+    }, [salary]);
+
+    React.useEffect(() => {
+        localStorage.setItem('otherIncome', otherIncome);
+    }, [otherIncome]);
 
     const handleAddExpense = () => {
         if (!expenseAmount || expenseAmount <= 0) {
@@ -91,8 +107,46 @@ const BudgetList = () => {
 
     const remainingBalance = totalIncome - totalExpense;
 
+    // Added Excel export function
+
+    const handleExport = () =>{ 
+        const exportData = budgetItems.flatMap(item => 
+        (item.expenses || []).map(exp => {
+            const expenseDate = new Date(exp.date);
+            return {
+                Category: item.name,
+                Amount: exp.amount,
+                Date: expenseDate.toLocaleDateString(),
+                Time: expenseDate.toLocaleTimeString()
+            };
+        })
+    );
+
+const worksheet = XLSX.utils.json_to_sheet(exportData);
+const workbook = XLSX.utils.book_new();
+XLSX.utils.book_append_sheet(workbook, worksheet, 'Expenses');
+
+const now =new Date();
+const fileName = `CashMentor_Expenses_${now.toLocaleDateString().replace(/\//g, '-')}_${now.getHours()}-${now.getMinutes()}.xlsx`;
+XLSX.writeFile(workbook, fileName);
+
+    };
+
+
+
     return (
         <div className='budget-container'>
+
+            {/* Income inputs */}
+
+            <div className="income-inputs">
+                <h3>Update Income</h3>
+                <label> Salary: <input type="number" value={salary} onChange={(e) => setSalary(Number(e.target.value))}/>
+                </label>
+                <label>Other Income: <input type="number" value={otherIncome} onChange={(e) => setOtherIncome(Number(e.target.value))}/>
+                </label>
+
+            </div>
 
             <div className='summary'>
                 <h2>Total Income: Rs.{totalIncome}</h2>
@@ -102,6 +156,10 @@ const BudgetList = () => {
 
             <div className='reset-btn-container'>
                 <button className='reset-btn' onClick={handleReset}>Reset Budget</button>
+            </div>
+
+            <div className='export-btn-container'>
+                <button className='export-btn' onClick={handleExport}>Export to Excel</button>
             </div>
 
             <div className='add-expense-form'>
